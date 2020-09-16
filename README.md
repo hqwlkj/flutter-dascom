@@ -1,6 +1,6 @@
 <p align="center">
   <a href="http://www.dascom.cn/">
-    <img width="200" src="http://www.dascom.cn/front/web/assets/image/logo.png">
+    <img width="120" src="http://www.dascom.cn/front/web/assets/image/logo.png">
   </a>
 </p>
 
