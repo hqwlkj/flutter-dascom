@@ -1,8 +1,10 @@
-# flutter_dascom
+<p align="center">
+  <a href="http://www.dascom.cn/">
+    <img width="200" src="http://www.dascom.cn/front/web/assets/image/logo.png">
+  </a>
+</p>
 
-<div style="text-align: center; margin-bottom: 50px">
-<img src="http://www.dascom.cn/front/web/assets/image/logo.png">
-</div>
+<h1 align="center">Flutter Dascom</h1>
 
 
 得实热敏打印机 Flutter Plugin，目前为公司内部使用，如需单独使用，请自己 fork 之后使用，谢谢.
