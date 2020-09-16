@@ -1,6 +1,13 @@
 # flutter_dascom
 
+<div style="text-align: center; margin-bottom: 50px">
+<img src="http://www.dascom.cn/front/web/assets/image/logo.png">
+</div>
+
+
 得实热敏打印机 Flutter Plugin，目前为公司内部使用，如需单独使用，请自己 fork 之后使用，谢谢.
+
+该插件未实现 iOS 端，如需使用请自己联系 [得实官方](http://www.dascom.cn/) 技术人员。
 
 ## Getting Started
 
