@@ -1,6 +1,6 @@
 name: flutter_dascom
 description: 得实热敏打印机 Flutter Plugin，目前为内部项目使用.
-version: 0.0.3
+version: 0.0.3+5
 author: Yanghc <hqwlkj@sina.com>
 homepage: https://github.com/hqwlkj/flutter-dascom.git
 

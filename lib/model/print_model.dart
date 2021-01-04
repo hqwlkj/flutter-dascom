@@ -15,13 +15,13 @@ mixin BaseModel {
 }
 
 class PrintModel implements BaseModel {
-  final String title;
+  final TitleModel title;
   final String subtitle;
   final String datetime;
   final List<Map<String, String>> contents;
   final String barCode;
   final String qrCode;
-  final String prompt;
+  final List<String> prompt;
 
   PrintModel(
       {@required this.title,
@@ -35,13 +35,49 @@ class PrintModel implements BaseModel {
   @override
   Map toMap() {
     return {
-      _title: title,
+      _title: title.toMap(),
       _subtitle: subtitle,
       _datetime: datetime,
       _barCode: barCode,
       _contents: contents,
       _qrCode: qrCode,
       _prompt: prompt
+    };
+  }
+}
+
+class TitleModel implements BaseModel {
+  /// 打印内容
+  final String text;
+
+  /// 打印行数
+  /// 接受的值：1 至 9999
+  /// 默认值：1
+  /// 超过最大行数的文本会覆盖最后一行。更改字体大小会自动增大或减
+  /// 小文本块的大小。
+  final int line;
+
+  /// 对齐方式
+  /// 0 = 左对齐
+  /// 1 = 居中
+  /// 2 = 右对齐
+  /// 3 = 两端对齐
+  /// 默认值：0
+  /// 如果使用 3，则最后一行为左对齐。
+  final int textPair;
+
+  /// 字体大小 1-10
+  final int fontSize;
+
+  TitleModel(this.text, [this.line = 1, this.textPair = 0, this.fontSize = 1]);
+
+  @override
+  Map toMap() {
+    return {
+      "text": text,
+      "line": line,
+      "textPair": textPair,
+      "fontSize": fontSize,
     };
   }
 }

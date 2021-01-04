@@ -3,6 +3,8 @@ package com.parsec.flutter_dascom
 import android.hardware.usb.UsbDevice
 import android.os.Handler
 import android.os.Looper
+import android.text.TextUtils
+import android.util.Log
 import androidx.annotation.NonNull
 import com.dascom.print.PrintCommands.ZPL
 import com.dascom.print.Transmission.Pipe
@@ -18,6 +20,9 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import java.util.*
+import java.util.logging.Logger
+import kotlin.collections.HashMap
 
 /** FlutterDascomPlugin */
 public class FlutterDascomPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -338,40 +343,53 @@ public class FlutterDascomPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             return
         }
         val labelWidth: Number = 58 * DPI_203.MM // 纸张宽度  单位 毫米
-        val title: String = call.argument("title")!!
-        val subtitle: String = call.argument("subtitle")!!
-        val datetime: String = call.argument("datetime")!!
-        val prompt: String = call.argument("prompt")!!
-        val barCode: String = call.argument("barCode")!!
-        val qrCode: String = call.argument("qrCode")!!
+        val title: Map<String, Any> = call.argument<Map<String, Any>>("title")!!
+        val subtitle: String = call.argument<String>("subtitle")!!
+        val datetime: String = call.argument<String>("datetime")!!
+        val prompt: List<String> = call.argument<List<String>>("prompt")!!
+        val barCode: String = call.argument<String>("barCode")!!
+        val qrCode: String = call.argument<String>("qrCode")!!
         val contents: List<Map<String, String>> = call.argument("contents")!!
 //        val barCode: Map<String, String> = call.argument("barCode")!!
 //        val qrCode: Map<String, String> = call.argument("qrCode")!!
         Thread { // 注意打印顺序
-            if (prompt != null) {
-                smartPrint!!.setLabelStart()
-                smartPrint!!.setLabelWidth(labelWidth.toInt())
-                smartPrint!!.setLabelLength(DPI_203.CM)
-                smartPrint!!.setFieldBlock(0, 1, 0, 1) // 打印内容自定义 打印内容居中
-                smartPrint!!.printText(0, 0, 1, 1, prompt)
-                smartPrint!!.setLabelEnd()
-            }
-
-            smartPrint!!.setLabelStart()
-            smartPrint!!.setLabelWidth(labelWidth.toInt())
-            smartPrint!!.setLabelLength((2.5 * DPI_203.CM).toInt())
-            smartPrint!!.printCode128(3 * DPI_203.MM, 5 * DPI_203.MM, 10 * DPI_203.MM, 0, 0, true, false, barCode)
-            smartPrint!!.setLabelEnd()
-
+            // 打印空行 便于切纸机切纸
             smartPrint!!.setLabelStart()
             smartPrint!!.setFieldBlock(0, 1, 0, 1) // 打印内容自定义 打印内容居中
             smartPrint!!.setLabelWidth(labelWidth.toInt())
-            smartPrint!!.setLabelLength(4 * DPI_203.CM) // 当前内容所占用的行高
-            //打印二维码,大小7，纠错级别 H
-            smartPrint!!.printQRCode(10 * DPI_203.MM, 5 * DPI_203.MM, 10, 'H', qrCode) //  二维码
+            smartPrint!!.setLabelLength(2 * DPI_203.CM) //
+            smartPrint!!.printText(0, 0, 2, 2, "      ")
             smartPrint!!.setLabelEnd()
+            if (prompt.isNotEmpty()) {
+                prompt.reversed().forEach{item ->
+                    smartPrint!!.setLabelStart()
+                    smartPrint!!.setLabelWidth(labelWidth.toInt())
+                    smartPrint!!.setLabelLength(50)
+                    smartPrint!!.setFieldBlock(0, 1, 1, 1) // 打印内容自定义 打印内容居中
+                    smartPrint!!.printText(0, 0, 1, 1, item)
+                    smartPrint!!.setLabelEnd()}
+            }
 
-            contents.forEach { map ->
+            if(!TextUtils.isEmpty(barCode)){
+                smartPrint!!.setLabelStart()
+                smartPrint!!.setFieldBlock(0, 1, 1, 1) // 打印内容自定义 打印内容居中
+                smartPrint!!.setLabelWidth(labelWidth.toInt())
+                smartPrint!!.setLabelLength((2.5 * DPI_203.CM).toInt())
+                smartPrint!!.printCode128(3 * DPI_203.MM, 5 * DPI_203.MM, 10 * DPI_203.MM, 0, 0, true, false, barCode)
+                smartPrint!!.setLabelEnd()
+            }
+
+            if(!TextUtils.isEmpty(qrCode)){
+                smartPrint!!.setLabelStart()
+                smartPrint!!.setFieldBlock(0, 1, 1, 1) // 打印内容自定义 打印内容居中
+                smartPrint!!.setLabelWidth(labelWidth.toInt())
+                smartPrint!!.setLabelLength(5 * DPI_203.CM) // 当前内容所占用的行高
+                //打印二维码,大小7，纠错级别 H
+                smartPrint!!.printQRCode(6 * DPI_203.MM, 5 * DPI_203.MM, 8, 'H', qrCode) //  二维码
+                smartPrint!!.setLabelEnd()
+            }
+
+            contents.reversed().forEach { map ->
                 smartPrint!!.setLabelStart()
                 smartPrint!!.setLabelWidth(labelWidth.toInt())
                 smartPrint!!.setLabelLength(5 * DPI_203.MM)
@@ -379,7 +397,7 @@ public class FlutterDascomPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 smartPrint!!.setLabelEnd()
             }
 
-            if (datetime != null) {
+            if (datetime != "") {
                 smartPrint!!.setLabelStart()
                 smartPrint!!.setLabelWidth(labelWidth.toInt())
                 smartPrint!!.setLabelLength(DPI_203.CM)
@@ -387,19 +405,31 @@ public class FlutterDascomPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 smartPrint!!.printText(0, 0, 1, 1, datetime)
                 smartPrint!!.setLabelEnd()
             }
-            if (subtitle != null) {
+            if (subtitle != "") {
                 smartPrint!!.setLabelStart()
-                smartPrint!!.setFieldBlock(0, 1, 0, 1) // 打印内容自定义 打印内容居中
+                smartPrint!!.setFieldBlock(0, 1, 1, 1) // 打印内容自定义 打印内容居中
                 smartPrint!!.setLabelWidth(labelWidth.toInt())
-                smartPrint!!.setLabelLength(DPI_203.CM)
+                smartPrint!!.setLabelLength(40)
                 smartPrint!!.printText(0, 0, 1, 1, subtitle)
                 smartPrint!!.setLabelEnd()
             }
+            val text: String? = title["text"] as String?
+            val line: Int = title["line"] as Int
+            val textPair: Int = title["textPair"] as Int
+            val fontSize: Int = title["fontSize"] as Int
+            smartPrint!!.setLabelStart()
+            smartPrint!!.setLabelWidth(labelWidth.toInt())
+            smartPrint!!.setFieldBlock(0, line, textPair, 1) // 打印内容自定义 打印内容居中
+            smartPrint!!.setLabelLength(line * 60)
+            smartPrint!!.printText(0, 0, fontSize, fontSize, text)
+            smartPrint!!.setLabelEnd()
+
+            // 打印空行 便于切纸机切纸
             smartPrint!!.setLabelStart()
             smartPrint!!.setFieldBlock(0, 1, 0, 1) // 打印内容自定义 打印内容居中
             smartPrint!!.setLabelWidth(labelWidth.toInt())
-            smartPrint!!.setLabelLength(DPI_203.CM) //
-            smartPrint!!.printText(0, 0, 2, 2, title)
+            smartPrint!!.setLabelLength(2 * DPI_203.CM) //
+            smartPrint!!.printText(0, 0, 2, 2, "      ")
             val b = smartPrint!!.setLabelEnd()
             uiThreadHandler.post(Runnable {
                 result.success(b)

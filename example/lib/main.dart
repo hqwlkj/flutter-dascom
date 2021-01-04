@@ -124,27 +124,43 @@ class _MyAppState extends State<MyApp> {
               FlatButton(
                   color: Theme.of(context).primaryColor,
                   onPressed: () async {
+                    // PrintModel _model = new PrintModel(
+                    //     title: '虚拟医院',
+                    //     subtitle: '门诊缴费凭证',
+                    //     datetime:
+                    //         '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} 15:00-15:30',
+                    //     contents: [ // 这里需要注意打印的顺序
+                    //       {"label": "支付流水号", "value": "42000043423156642"},
+                    //       {"label": "支付金额", "value": "￥100.00"},
+                    //       {"label": "支付方式", "value": "银联支付"},
+                    //       {"label": "位    置", "value": "门诊1号楼4层"},
+                    //       {"label": "执行科室", "value": "CT室"},
+                    //       {"label": "项目名称", "value": "CT直接增强"},
+                    //       {"label": "开单科室", "value": "内分泌科"},
+                    //       {"label": "就诊卡号", "value": "0007730"},
+                    //       {"label": "就 诊 人", "value": "张三"}
+                    //     ],
+                    //     barCode: '6907992100272',
+                    //     qrCode: '6907992100272',
+                    //     //     barCode: 'BarCodeModel('6907992100272').toMap()',
+                    //     //     qrCode: QrCodeModel('6907992100272').toMap(),
+                    //     prompt: '（请妥善保管或撕毁处理）');
                     PrintModel _model = new PrintModel(
-                        title: '虚拟医院',
-                        subtitle: '门诊缴费凭证',
+                        title: TitleModel('重庆医科大学附属口腔医院', 2, 2, 2),
+                        subtitle: '电子健康卡',
                         datetime:
-                            '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} 15:00-15:30',
+                        '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day} 15:00-15:30',
                         contents: [ // 这里需要注意打印的顺序
-                          {"label": "支付流水号", "value": "42000043423156642"},
-                          {"label": "支付金额", "value": "￥100.00"},
-                          {"label": "支付方式", "value": "银联支付"},
-                          {"label": "位    置", "value": "门诊1号楼4层"},
-                          {"label": "执行科室", "value": "CT室"},
-                          {"label": "项目名称", "value": "CT直接增强"},
-                          {"label": "开单科室", "value": "内分泌科"},
-                          {"label": "就诊卡号", "value": "0007730"},
-                          {"label": "就 诊 人", "value": "张三"}
+                          {"label": "就 诊 人", "value": "江小白"},
+                          {"label": "就诊卡号", "value": 'KQ0000081232'},
+                          {"label": "性   别", "value": "内分泌科"},
+                          {"label": "身份证号", "value": '511322111233433232'},
+                          {"label": "手机号码", "value": '15000000001'},
+                          {"label": "创建时间", "value": "门诊1号楼4层"}
                         ],
-                        barCode: '6907992100272',
-                        qrCode: '6907992100272',
-                        //     barCode: 'BarCodeModel('6907992100272').toMap()',
-                        //     qrCode: QrCodeModel('6907992100272').toMap(),
-                        prompt: '（请妥善保管或撕毁处理）');
+                        qrCode: "0E815E49BAB461A849ADAFDD9C5B31151AA951BB294397F256177E3BC268614D",
+                        barCode: '',
+                        prompt: ['请在挂号或缴费时出示上方二维码', '作为就医凭证']);
                     bool msg =
                         await FlutterDascom.printSmallTicketTemplate(_model);
                     if (!mounted) return;
